@@ -144,9 +144,9 @@ function save(){
 	Apps.frpc_common_log_file = E('_frpc_common_log_file').value;
 	Apps.frpc_common_log_level = E('_frpc_common_log_level').value;
 	Apps.frpc_common_log_max_days = E('_frpc_common_log_max_days').value;
-	Apps.frpc_common_privilege_token = E('_frpc_common_privilege_token').value;
+	Apps.frpc_common_token = E('_frpc_common_token').value;
 	Apps.frpc_srlist = frpc_srlist;
-	
+
 	//-------------- post Apps to dbus ---------------
 	var id = 1 + Math.floor(Math.random() * 6);
 	var postData = {"id": id, "method":'frpc_config.sh', "params":["start"], "fields": Apps};
@@ -199,7 +199,7 @@ function save(){
 		{ title: '底层通讯协议', name: 'frpc_common_protocol', type: 'select', options:protocol, value: Apps.frpc_common_protocol ||'tcp' },
 		{ title: 'TCP多路复用', name: 'frpc_common_tcp_mux', type: 'select', options:tcp_mux, value: Apps.frpc_common_tcp_mux ||'false' },
 		{ title: '连接设置', name: 'frpc_common_login_fail_exit', type: 'select', options:login_fail_exit, value: Apps.frpc_common_login_fail_exit ||'tcp' },
-		{ title: '特权连接密码(privilege_token)', name: 'frpc_common_privilege_token', type: 'password', maxlen: 20, size: 20, value: Apps.frpc_common_privilege_token,peekaboo: 1},
+		{ title: '连接密码(token)', name: 'frpc_common_token', type: 'password', maxlen: 20, size: 20, value: Apps.frpc_common_token,peekaboo: 1},
 		{ title: 'HTTP穿透服务端口', name: 'frpc_vhost_http_port', type: 'text', maxlen: 5, size: 5, value: Apps.frpc_vhost_http_port, help: '对应服务器端vhost_http_port' },
 		{ title: 'HTTPS穿透服务端口', name: 'frpc_vhost_https_port', type: 'text', maxlen: 5, size: 5, value: Apps.frpc_vhost_https_port, help: '对应服务器端vhost_https_port' },
 		{ title: 'frpc用户名', name: 'frpc_common_user', type: 'text', maxlen: 5, size: 5, value: Apps.frpc_common_user ||'admin' },
@@ -214,7 +214,7 @@ function save(){
 	<div class="heading">frpc穿透配置</div>
 	<hr>
 	<div class="content">
-		<table class="line-table" cellspacing=1 id="frpc-grid"></table>	
+		<table class="line-table" cellspacing=1 id="frpc-grid"></table>
 		<script type="text/javascript">frpc.setup();</script>
 		<br><hr>
 		<h4>配置说明：</h4>

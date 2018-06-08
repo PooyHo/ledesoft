@@ -20,7 +20,7 @@ write_conf(){
         echo "remote_port = `echo $i|cut -d'<' -f6`" >> $conf_file
         use_compression=`echo $i|cut -d'<' -f7`
         use_encryption=`echo $i|cut -d'<' -f8`
-        privilege_mode=`echo $i|cut -d'<' -f9`
+        #privilege_mode=`echo $i|cut -d'<' -f9`
         if [ $use_compression == "1" ];then
             echo "use_compression = true" >> $conf_file
         else
