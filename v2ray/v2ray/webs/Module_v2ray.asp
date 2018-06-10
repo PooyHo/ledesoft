@@ -3,9 +3,10 @@
 <script type="text/javascript" src="/js/jquery.min.js"></script>
 <script type="text/javascript" src="/js/tomato.js"></script>
 <script type="text/javascript" src="/js/advancedtomato.js"></script>
+<script type="text/javascript" src="/js/v2ray.js"></script>
 <style type="text/css">
-.box {
-	min-width:540px;
+.box, #v2ray_tabs {
+	min-width:720px;
 }
 </style>
 	<script type="text/javascript">
@@ -28,6 +29,11 @@
 		var option_arp_local = [];
 		var option_arp_web = [];
 		var softcenter = 0;
+		var option_day_time = [["7", "每天"], ["1", "周一"], ["2", "周二"], ["3", "周三"], ["4", "周四"], ["5", "周五"], ["6", "周六"], ["0", "周日"]];
+		var option_hour_time = [];
+		for(var i = 0; i < 24; i++){
+			option_hour_time[i] = [i, i + "点"];
+		}
 
 		if (typeof btoa == "Function") {
 			Base64 = {
@@ -302,6 +308,8 @@
 		
 		function get_run_status(){
 			if (status_time > 99999){
+				E("_v2ray_basic_status_foreign").innerHTML = "暂停获取状态...";
+				E("_v2ray_basic_status_china").innerHTML = "暂停获取状态...";
 				return false;
 			}
 			var id1 = parseInt(Math.random() * 100000000);
@@ -420,13 +428,22 @@
 			
 			var c  = E('_v2ray_dns_foreign').value == '4';
 			elem.display('_v2ray_dns_foreign_user', c);
-
+			//rule
+			var l1  = E('_v2ray_basic_rule_update').value == '1';
+			elem.display('_v2ray_basic_rule_update_day', l1);
+			elem.display('_v2ray_basic_rule_update_hr', l1);
+			elem.display(elem.parentElem('_v2ray_basic_gfwlist_update', 'DIV'), l1);
+			elem.display('_v2ray_basic_gfwlist_update_txt', l1);
+			elem.display(elem.parentElem('_v2ray_basic_chnroute_update', 'DIV'), l1);
+			elem.display('_v2ray_basic_chnroute_update_txt', l1);
+			elem.display(elem.parentElem('_v2ray_basic_cdn_update', 'DIV'), l1);
+			elem.display('_v2ray_basic_cdn_update_txt', l1);
 			return true;
 		}
 		function tabSelect(obj){
-			var tableX = ['app1-tab', 'app2-tab','app3-tab','app4-tab','app5-tab','app6-tab'];
-			var boxX = ['boxr1','boxr2','boxr3','boxr4','boxr5','boxr6'];
-			var appX = ['app1','app2','app3','app4','app5','app6'];
+			var tableX = ['app1-tab', 'app2-tab','app3-tab','app4-tab','app5-tab','app6-tab','app7-tab'];
+			var boxX = ['boxr1','boxr2','boxr3','boxr4','boxr5','boxr6','boxr7'];
+			var appX = ['app1','app2','app3','app4','app5','app6','app7'];
 			for (var i = 0; i < tableX.length; i++){
 				if(obj == appX[i]){
 					$('#'+tableX[i]).addClass('active');
@@ -438,12 +455,12 @@
 			}
 			if(obj=='app6'){
 				elem.display('save-button', false);
-				elem.display('cancel-button', false);
 				noChange=0;
 				setTimeout("get_log();", 200);
+			}else if(obj=='app7'){
+				elem.display('save-button', false);
 			}else{
 				elem.display('save-button', true);
-				elem.display('cancel-button', true);
 				noChange=2001;
 			}
 			if(obj=='fuckapp'){
@@ -468,8 +485,8 @@
 			get_run_status();
 			E("_v2ray_basic_status_foreign").innerHTML = "国外链接 - 提交中...暂停获取状态！";
 			E("_v2ray_basic_status_china").innerHTML = "国内链接 - 提交中...暂停获取状态！";
-			var paras_chk = ["enable"];
-			var paras_inp = ["v2ray_acl_default_mode", "v2ray_dns_plan", "v2ray_dns_china", "v2ray_dns_china_user", "v2ray_dns_foreign_select", "v2ray_dns_foreign", "v2ray_dns_foreign_user" ];
+			var paras_chk = ["enable", "gfwlist_update", "chnroute_update", "cdn_update"];
+			var paras_inp = ["v2ray_acl_default_mode", "v2ray_dns_plan", "v2ray_dns_china", "v2ray_dns_china_user", "v2ray_dns_foreign_select", "v2ray_dns_foreign", "v2ray_dns_foreign_user", "v2ray_basic_rule_update", "v2ray_basic_rule_update_day", "v2ray_basic_rule_update_hr" ];
 			// collect data from checkbox
 			for (var i = 0; i < paras_chk.length; i++) {
 				dbus["v2ray_basic_" + paras_chk[i]] = E('_v2ray_basic_' + paras_chk[i] ).checked ? '1':'0';
@@ -483,7 +500,7 @@
 				}
 			}
 			// data need base64 encode
-			var paras_base64 = ["v2ray_wan_white_ip", "v2ray_wan_white_domain", "v2ray_wan_black_ip", "v2ray_wan_black_domain", "v2ray_dnsmasq", "v2ray_basic_config"];
+			var paras_base64 = ["v2ray_wan_white_ip", "v2ray_wan_white_domain", "v2ray_wan_black_ip", "v2ray_wan_black_domain", "v2ray_dnsmasq"];
 			for (var i = 0; i < paras_base64.length; i++) {
 				if (typeof(E('_' + paras_base64[i] ).value) == "undefined"){
 					dbus[paras_base64[i]] = "";
@@ -491,6 +508,10 @@
 					dbus[paras_base64[i]] = Base64.encode(E('_' + paras_base64[i]).value);
 				}
 			}
+			console.log(Base64.encode(E('_v2ray_basic_config').value));
+			dbus["v2ray_basic_config"] = Base64.encode(E('_v2ray_basic_config').value);
+			//dbus["v2ray_basic_config"] = Base64.encode(pack_js(E('_v2ray_basic_config').value));
+			
 			// collect acl data from acl pannel
 			var v2ray_acl_conf = ["v2ray_acl_name_", "v2ray_acl_ip_", "v2ray_acl_mac_", "v2ray_acl_mode_" ];
 			// mark all acl data for delete first
@@ -598,9 +619,29 @@
 			var dbus3 = {};
 			if(arg == 2 || arg == 4 || arg == 5){
 				tabSelect("app6");
+			}else if(arg == 6){
+				status_time = 999999990;
+				get_run_status();
+				tabSelect("app6");
+			}else if(arg == 7){
+				var paras_chk = ["gfwlist_update", "chnroute_update", "cdn_update"];
+				var paras_inp = ["v2ray_basic_rule_update", "v2ray_basic_rule_update_day", "v2ray_basic_rule_update_hr" ];
+				// collect data from checkbox
+				for (var i = 0; i < paras_chk.length; i++) {
+					dbus3["v2ray_basic_" + paras_chk[i]] = E('_v2ray_basic_' + paras_chk[i] ).checked ? '1':'0';
+				}
+				// data from other element
+				for (var i = 0; i < paras_inp.length; i++) {
+					if (typeof(E('_' + paras_inp[i] ).value) == "undefined"){
+						dbus3[paras_inp[i]] = "";
+					}else{
+						dbus3[paras_inp[i]] = E('_' + paras_inp[i]).value;
+					}
+				}
+				tabSelect("app6");
 			}
 			var id = parseInt(Math.random() * 100000000);
-			var postData = {"id": id, "method": script, "params":[arg], "fields": [] };
+			var postData = {"id": id, "method": script, "params":[arg], "fields": dbus3 };
 			$.ajax({
 				type: "POST",
 				url: "/_api/",
@@ -610,7 +651,7 @@
 				dataType: "json",
 				success: function(response){
 					if (script == "v2ray_config.sh"){
-						if(arg == 2 || arg == 4 ){
+						if(arg == 2 || arg == 4 || arg == 6 || arg == 7 ){
 							setTimeout("window.location.reload()", 800);
 						}else if (arg == 3){
 							var a = document.createElement('A');
@@ -669,7 +710,7 @@
 			你需要为 V2Ray 安装专用的服务端程序:<a href="https://github.com/v2ray/v2ray-core" target="_blank"> 【点此访问源码项目】 </a><a href="https://www.v2ray.com/chapter_00/install.html" target="_blank"> 【点此访问一键服务器安装脚本】 </a>
 		</div>
 	</div>
-	<div class="box" style="margin-top: 0px;min-width:540px;">
+	<div class="box" style="margin-top: 0px;">
 		<div class="heading">
 		</div>
 		<div class="content">
@@ -691,11 +732,12 @@
 			</fieldset>
 		</div>
 	</div>
-	<ul id="v2ray_tabs" class="nav nav-tabs" style="min-width:540px;">
+	<ul id="v2ray_tabs" class="nav nav-tabs">
 		<li><a href="javascript:void(0);" onclick="tabSelect('app1');" id="app1-tab" class="active"><i class="icon-system"></i> 帐号设置</a></li>
 		<li><a href="javascript:void(0);" onclick="tabSelect('app4');" id="app4-tab"><i class="icon-lock"></i> 访问控制</a></li>
 		<li><a href="javascript:void(0);" onclick="tabSelect('app2');" id="app2-tab"><i class="icon-tools"></i> DNS设定</a></li>
 		<li><a href="javascript:void(0);" onclick="tabSelect('app3');" id="app3-tab"><i class="icon-warning"></i> 黑白名单</a></li>
+		<li><a href="javascript:void(0);" onclick="tabSelect('app7');" id="app7-tab"><i class="icon-cmd"></i> 规则管理</a></li>
 		<li><a href="javascript:void(0);" onclick="tabSelect('app5');" id="app5-tab"><i class="icon-wake"></i> 附加设置</a></li>
 		<li><a href="javascript:void(0);" onclick="tabSelect('app6');" id="app6-tab"><i class="icon-hourglass"></i> 查看日志</a></li>	
 	</ul>
@@ -706,6 +748,7 @@
 			<script type="text/javascript">
 				$('#v2ray_basic_pannel').forms([
 					{ title: '代理模式', name:'v2ray_acl_default_mode',type:'select', options:option_acl_mode, value:dbus.v2ray_acl_default_mode },
+					//{ title: '<b>v2ray配置文件</b></br></br><font color="#B2B2B2"># 此处填入v2ray json<br /># 请保证json内outbound的配置正确！</font>', name:'v2ray_basic_config',type:'textarea', value: do_js_beautify(Base64.decode(dbus.v2ray_basic_config))||"", style: 'width: 100%; height:450px;' },
 					{ title: '<b>v2ray配置文件</b></br></br><font color="#B2B2B2"># 此处填入v2ray json<br /># 请保证json内outbound的配置正确！</font>', name:'v2ray_basic_config',type:'textarea', value: Base64.decode(dbus.v2ray_basic_config)||"", style: 'width: 100%; height:450px;' },
 				]);
 			</script>
@@ -756,6 +799,33 @@
 			<br><hr>
 		</div>
 	</div>
+	<!-- ------------------ 规则管理 --------------------- -->
+	<div class="box boxr7" id="ss_rule_tab" style="margin-top: 0px;">
+		<div class="heading"></div>
+		<div class="content" style="margin-top: -20px;">
+			<div id="ss_rule_pannel" class="section"></div>
+			<script type="text/javascript">
+				$('#ss_rule_pannel').forms([
+					{ title: 'gfwlist域名数量', rid:'gfw_number_1', text:'<a id="gfw_number" href="https://github.com/koolshare/koolshare.github.io/blob/acelan_softcenter_ui/maintain_files/gfwlist.conf" target="_blank"></a>'},
+					{ title: '大陆白名单IP段数量', rid:'chn_number_1', text:'<a id="chn_number" href="https://github.com/koolshare/koolshare.github.io/blob/acelan_softcenter_ui/maintain_files/chnroute.txt" target="_blank"></a>'},
+					{ title: '国内域名数量（cdn名单）', rid:'cdn_number_1', text:'<a id="cdn_number" href="https://github.com/koolshare/koolshare.github.io/blob/acelan_softcenter_ui/maintain_files/cdn.txt" target="_blank"></a>'},
+					{ title: '规则自动更新', multi: [
+						{ name: 'v2ray_basic_rule_update',type: 'select', options:[['0', '禁用'], ['1', '开启']], value: dbus.v2ray_basic_rule_update || "1", suffix: ' &nbsp;&nbsp;' },
+						{ name: 'v2ray_basic_rule_update_day', type: 'select', options:option_day_time, value: dbus.v2ray_basic_rule_update_day || "7",suffix: ' &nbsp;&nbsp;' },
+						{ name: 'v2ray_basic_rule_update_hr', type: 'select', options:option_hour_time, value: dbus.v2ray_basic_rule_update_hr || "3",suffix: ' &nbsp;&nbsp;' },
+						{ name: 'v2ray_basic_gfwlist_update',type:'checkbox',value: dbus.v2ray_basic_gfwlist_update != 0, suffix: '<lable id="_v2ray_basic_gfwlist_update_txt">gfwlist</lable>&nbsp;&nbsp;' },
+						{ name: 'v2ray_basic_chnroute_update',type:'checkbox',value: dbus.v2ray_basic_chnroute_update != 0, suffix: '<lable id="_v2ray_basic_chnroute_update_txt">chnroute</lable>&nbsp;&nbsp;' },
+						{ name: 'v2ray_basic_cdn_update',type:'checkbox',value: dbus.v2ray_basic_cdn_update != 0, suffix: '<lable id="_v2ray_basic_cdn_update_txt">cdn_list</lable>&nbsp;&nbsp;' },
+						{ suffix: '<button id="_update_rules_now" onclick="manipulate_conf(\'v2ray_config.sh\', 6);" class="btn btn-success">手动更新 <i class="icon-cloud"></i></button>' }
+					]}
+				]);
+				$('#gfw_number').html(dbus.v2ray_basic_gfw_status || "未初始化");
+				$('#chn_number').html(dbus.v2ray_basic_chn_status || "未初始化");
+				$('#cdn_number').html(dbus.v2ray_basic_cdn_status || "未初始化");
+			</script>
+		</div>
+	</div>
+	<button type="button" value="Save" id="save-subscribe-node" onclick="manipulate_conf('v2ray_config.sh', 7)" class="btn btn-primary boxr7">保存本页设置 <i class="icon-check"></i></button>
 	<div class="box boxr5" id="v2ray_addon_tab" style="margin-top: 0px;">
 		<div class="heading"></div>
 		<div class="content" style="margin-top: -20px;">
@@ -786,6 +856,5 @@
 	<div id="msg_success" class="alert alert-success icon" style="display:none;"></div>
 	<div id="msg_error" class="alert alert-error icon" style="display:none;"></div>
 	<button type="button" value="Save" id="save-button" onclick="save()" class="btn btn-primary">提交 <i class="icon-check"></i></button>
-	<button type="button" value="Cancel" id="cancel-button" onclick="javascript:reloadPage();" class="btn">取消 <i class="icon-cancel"></i></button>
 	<script type="text/javascript">init_v2ray();</script>
 </content>

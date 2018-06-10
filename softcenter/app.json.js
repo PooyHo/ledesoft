@@ -12,15 +12,15 @@
             "version": "0.3"
         }, 
         {
-            "build_date": "2018-05-05_16:46:21", 
-            "changelog": "更新0.5版本", 
+            "build_date": "2018-06-10_16:02:13", 
+            "changelog": "更新0.6版本", 
             "description": "模块化的代理软件包", 
             "home_url": "Module_v2ray.asp", 
-            "md5": "2d53fbf17361aa383196b6df7d7016ca", 
+            "md5": "7c096a443cf2ae5cd1ed13666b62f18a", 
             "name": "v2ray", 
             "tar_url": "v2ray/v2ray.tar.gz", 
             "title": "V2Ray", 
-            "version": "0.5"
+            "version": "0.6"
         }, 
         {
             "build_date": "2017-10-12_11:01:40", 
