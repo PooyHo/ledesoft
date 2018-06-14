@@ -13,7 +13,7 @@ chmod a+x $KSROOT/frpc/frpc
 
 # add icon into softerware center
 dbus set softcenter_module_frpc_install=1
-dbus set softcenter_module_frpc_version=2.0
+dbus set softcenter_module_frpc_version=2.1
 dbus set softcenter_module_frpc_name=frpc
 dbus set softcenter_module_frpc_title=frpc
 dbus set softcenter_module_frpc_description="frp内网穿透客户端"
