@@ -1,5 +1,10 @@
 Koolshare OpenWRT/LEDE V2ray plugin Changelog
 ===========================================
+0.7
+   - update	更新v2ray二进制到最新：V3.26；
+   - fix	防火墙自动重启无法运行的问题；
+   - del	删除geoip数据库；
+
 0.6
    - 说明	v2ray json配置保存时，有时会使skipd进程崩溃，导致软件中心看不到任何插件，此问题已在软件中心0.3.3修复，请更新软件中心！
    - update	更新v2ray二进制到最新：V3.25.1；

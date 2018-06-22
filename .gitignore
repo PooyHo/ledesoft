@@ -4,6 +4,7 @@ tunnel
 .htaccess
 .user.ini
 /homebridge/build
+/homeassistant/build
 /lnmp/build
 /iscsi/build
 /unifi/build
